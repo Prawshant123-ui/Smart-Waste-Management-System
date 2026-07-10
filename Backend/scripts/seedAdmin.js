@@ -41,3 +41,6 @@ seedAdmin()
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());
+
+
+  module.exports=seedAdmin;

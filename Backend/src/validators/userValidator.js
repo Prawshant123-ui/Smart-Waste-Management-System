@@ -24,4 +24,12 @@ const createCollectorValidator = [
     .isMobilePhone().withMessage("Invalid phone number"),
 ];
 
-module.exports = { createCollectorValidator };
+const updateCollectorValidator = [
+  body("name").optional().trim().isLength({ min: 3, max: 50 }).matches(/^[a-zA-Z\s]+$/).escape(),
+  body("email").optional().trim().isEmail().normalizeEmail(),
+  body("phone").optional().isMobilePhone(),
+];
+
+module.exports = { createCollectorValidator, updateCollectorValidator };
+
+

@@ -53,4 +53,68 @@ const listUsers = async (req, res) => {
   }
 };
 
-module.exports = { createCollector, listUsers };
+const updateCollector = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phone } = req.body;
+
+    const existing = await prisma.user.findUnique({ where: { id } });
+    if (!existing || existing.role !== "COLLECTOR") {
+      return res.status(404).json({ message: "Collector not found" });
+    }
+
+    if (email || phone) {
+      const conflict = await prisma.user.findFirst({
+        where: {
+          id: { not: id },
+          OR: [email ? { email } : undefined, phone ? { phone } : undefined].filter(Boolean),
+        },
+      });
+      if (conflict) {
+        return res.status(409).json({ message: "Email or phone already in use" });
+      }
+    }
+
+    const collector = await prisma.user.update({
+      where: { id },
+      data: { name, email, phone },
+      select: { id: true, name: true, email: true, phone: true, role: true },
+    });
+
+    return res.status(200).json({ message: "Collector updated", collector });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to update collector" });
+  }
+};
+
+const deleteCollector = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const existing = await prisma.user.findUnique({ where: { id } });
+    if (!existing || existing.role !== "COLLECTOR") {
+      return res.status(404).json({ message: "Collector not found" });
+    }
+
+    const activeTasks = await prisma.collection.count({
+      where: { collectorId: id, status: { in: ["ASSIGNED", "IN_PROGRESS"] } },
+    });
+    if (activeTasks > 0) {
+      return res.status(400).json({
+        message: "Cannot delete a collector with active tasks. Reassign or complete them first.",
+      });
+    }
+
+    await prisma.user.delete({ where: { id } });
+
+    return res.status(200).json({ message: "Collector deleted" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Failed to delete collector" });
+  }
+};
+
+module.exports = { createCollector, listUsers, updateCollector, deleteCollector };
+
+
