@@ -11,6 +11,7 @@ import Spinner from "../../components/ui/Spinner.jsx";
 import { getComplaint } from "../../api/complaints.js";
 import { listUsers } from "../../api/users.js";
 import { getVehicles } from "../../api/vehicles.js";
+import { getBins } from "../../api/bins.js";
 import { assignTask } from "../../api/collections.js";
 
 export default function AssignTask() {
@@ -19,17 +20,22 @@ export default function AssignTask() {
   const [c, setC] = useState(null);
   const [collectors, setCollectors] = useState([]);
   const [vehicles, setVehicles] = useState([]);
+  const [bins, setBins] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm();
+  const { register, handleSubmit, watch, formState: { isSubmitting } } = useForm();
+
+  const selectedBinId = watch("binId");
 
   useEffect(() => {
-    Promise.all([getComplaint(id), listUsers(), getVehicles()])
-      .then(([complaint, users, vs]) => {
+    Promise.all([getComplaint(id), listUsers(), getVehicles(), getBins()])
+      .then(([complaint, users, vs, bs]) => {
         setC(complaint.complaint || complaint);
         const list = Array.isArray(users) ? users : users.users || [];
         setCollectors(list.filter((u) => u.role === "COLLECTOR"));
         const v = Array.isArray(vs) ? vs : vs.vehicles || [];
         setVehicles(v.filter((x) => x.status === "AVAILABLE"));
+        const b = Array.isArray(bs) ? bs : bs.bins || [];
+        setBins(b);
       })
       .catch((e) => toast.error(e.message))
       .finally(() => setLoading(false));
@@ -52,6 +58,8 @@ export default function AssignTask() {
 
   if (loading) return <div className="flex justify-center p-10"><Spinner /></div>;
   if (!c) return null;
+
+  const hasBin = Boolean(c.binId || selectedBinId);
 
   return (
     <div className="max-w-2xl">
@@ -77,14 +85,24 @@ export default function AssignTask() {
               <option key={v.id} value={v.id}>{v.vehicleNumber} — {v.driver}</option>
             ))}
           </Select>
+
           {!c.binId && (
-            <div className="text-sm text-warning">
-              This complaint has no linked bin; the backend requires one.
-            </div>
+            <>
+              <Select label="Bin" {...register("binId", { required: true })}>
+                <option value="">— Select bin —</option>
+                {bins.map((b) => (
+                  <option key={b.id} value={b.id}>{b.address}</option>
+                ))}
+              </Select>
+              <div className="text-sm text-warning">
+                This complaint has no linked bin. Pick one above before assigning.
+              </div>
+            </>
           )}
+
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => navigate(-1)}>Cancel</Button>
-            <Button type="submit" disabled={isSubmitting || !c.binId}>Assign</Button>
+            <Button type="submit" disabled={isSubmitting || !hasBin}>Assign</Button>
           </div>
         </form>
       </Card>

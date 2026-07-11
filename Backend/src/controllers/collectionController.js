@@ -13,6 +13,17 @@ const assignTask = async (req, res) => {
       return res.status(400).json({ message: "Complaint must be approved before assignment" });
     }
 
+    
+    const resolvedBinId = complaint.binId || binId;
+    if (!resolvedBinId) {
+      return res.status(400).json({ message: "A bin is required to assign this task" });
+    }
+
+    const bin = await prisma.bin.findUnique({ where: { id: resolvedBinId } });
+    if (!bin) {
+      return res.status(400).json({ message: "Invalid bin" });
+    }
+
     const collector = await prisma.user.findUnique({ where: { id: collectorId } });
     if (!collector || collector.role !== "COLLECTOR") {
       return res.status(400).json({ message: "Invalid collector" });
@@ -27,7 +38,7 @@ const assignTask = async (req, res) => {
       data: {
         collectorId,
         vehicleId,
-        binId,
+        binId: resolvedBinId,
         complaintId,
         startTime: new Date(),
       },
@@ -35,7 +46,11 @@ const assignTask = async (req, res) => {
 
     await prisma.complaint.update({
       where: { id: complaintId },
-      data: { status: "ASSIGNED" },
+      data: {
+        status: "ASSIGNED",
+       
+        ...(complaint.binId ? {} : { binId: resolvedBinId }),
+      },
     });
 
     await prisma.vehicle.update({
