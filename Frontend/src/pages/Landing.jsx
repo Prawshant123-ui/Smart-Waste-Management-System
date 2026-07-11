@@ -72,7 +72,7 @@ export default function Landing() {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white font-bold shadow-sm">
               C
             </div>
-            <span className="text-lg font-bold text-ink">CleanCity</span>
+            <span className="text-lg font-bold text-ink">SafaCity</span>
           </Link>
           <nav className="hidden gap-8 md:flex">
             <a href="#features" className="text-sm font-medium text-body hover:text-ink">Features</a>
@@ -236,9 +236,9 @@ export default function Landing() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 md:flex-row md:px-8">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-white text-xs font-bold">C</div>
-            <span className="text-sm font-semibold text-ink">CleanCity</span>
+            <span className="text-sm font-semibold text-ink">SafaCity</span>
           </div>
-          <p className="text-xs text-body">© {new Date().getFullYear()} CleanCity. All rights reserved.</p>
+          <p className="text-xs text-body">© {new Date().getFullYear()} SafaCity. All rights reserved.</p>
         </div>
       </footer>
     </div>

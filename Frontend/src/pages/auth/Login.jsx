@@ -37,7 +37,7 @@ export default function Login() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white font-bold">
             C
           </div>
-          <span className="text-xl font-bold text-ink">CleanCity</span>
+          <span className="text-xl font-bold text-ink">SafaCity</span>
         </Link>
 
         <div className="rounded-2xl border border-line bg-surface p-8 shadow-card">
@@ -72,7 +72,7 @@ export default function Login() {
           </form>
 
           <p className="mt-6 text-center text-sm text-body">
-            New to CleanCity?{" "}
+            New to SafaCity?{" "}
             <Link to="/register" className="font-semibold text-primary hover:underline">
               Create an account
             </Link>

@@ -36,11 +36,11 @@ export default function Register() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white font-bold">
             C
           </div>
-          <span className="text-xl font-bold text-ink">CleanCity</span>
+          <span className="text-xl font-bold text-ink">SafaCity</span>
         </Link>
 
         <div className="rounded-2xl border border-line bg-surface p-8 shadow-card">
-          <h1 className="text-2xl font-bold text-ink">Join CleanCity</h1>
+          <h1 className="text-2xl font-bold text-ink">Join SafaCity</h1>
           <p className="mt-1 text-sm text-body">
             Report waste issues in your community.
           </p>
